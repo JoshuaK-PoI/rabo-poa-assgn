@@ -33,3 +33,12 @@ project:
 ```bash
 npm run start
 ```
+
+# Seeding fake customer data
+
+The project is already supplied with a `customers.json` file in the
+root. If you wish to seed new data, run the following command:
+
+```bash
+npm run seed
+```
