@@ -12,10 +12,17 @@ function seedDatabase() {
     .map(() => faker.string.alpha({ length: 1, casing: "upper" }))
     .join(".");
 
+  // Split surname into parts if applicable
+  const surname = faker.person.lastName();
+  const surnameParts = surname.split(" ");
+  const surnamePrefix =
+    surnameParts.length > 1 ? surnameParts.slice(0, -1).join(" ") : null;
+
   return {
     id: faker.string.uuid(),
     initials,
-    surname: faker.person.lastName(),
+    surname: surnameParts[surnameParts.length - 1],
+    surnamePrefix,
     sex: faker.person.sexType(),
     birthDate: faker.date.past({ years: 80 }).toLocaleDateString("nl-NL"),
     streetName: faker.location.street(),
@@ -26,7 +33,7 @@ function seedDatabase() {
   };
 }
 
-fs.open("customers.json", "w", (err, fd) => {
+fs.open("src/assets/customers.json", "w", (err, fd) => {
   if (err) throw err;
   fs.write(
     fd,
