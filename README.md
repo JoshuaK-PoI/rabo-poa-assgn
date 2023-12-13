@@ -1,27 +1,34 @@
-# RaboPoaAssgn
+# Power of Attorney
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.6.
+This assignment is an example application to demonstrate the use
+of Power of Attorney for internal employees.
 
-## Development server
+# Installation
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Refer to [INSTALL.md](INSTALL.md) for installation instructions.
 
-## Code scaffolding
+# Assignment details
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Background
 
-## Build
+A Power of Attorney is used when someone (grantor) wants to give access to his/her account(‘s) to someone else (grantee). This could be read access or write access. In this way the grantee can read/write in the grantors account. Notice that this is a simplified version of reality. An employee will facilitate doing this task for the customer. In the following business requirements, we want to create the first screen an employee gets to see in the Power of Attorney creation process.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Assignment
 
-## Running unit tests
+### Business Requirement:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The employee needs to select the customers, to create a power of attorney.
 
-## Running end-to-end tests
+1. Customer Search - Employee must be able to search a customer based on the (postal code and a house number) or name and list all customers with their basic information (name, address, etc).
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- The search is performed on the backend side. The frontend will pass the criteria and handle the response from the backend. (no backend work needed, use a static file to simulate the response)
 
-## Further help
+2. Employee Details - Employee must be able to click on one of the results and the details of the selected customer will be shown replacing the search results.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+### Bonus tasks
+
+These requirements are not mandatory to complete the assignment. If there’s time left, you can implement these functionalities
+
+- Cancel customer selection - Employee should be able to cancel the customer selection and select another customer from the previous search results.
+
+- Sortable table - Employee should be able to sort the table as I wish.
