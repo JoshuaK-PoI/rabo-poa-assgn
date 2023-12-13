@@ -1,0 +1,97 @@
+<a mat-flat-button color="primary" routerLink="/home">
+  <mat-icon>arrow_back</mat-icon>
+  <span>Back</span>
+</a>
+@if (customer === null) {
+<p>Customer not found</p>
+} @else {
+<mat-card class="customer-details">
+  <mat-card-header>
+    <mat-card-title>Customer details</mat-card-title>
+    <mat-card-subtitle>Customer ID: {{ customer.id }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="customerForm">
+      <mat-grid-list cols="3" rowHeight="4:1">
+        <mat-grid-tile colspan="3" class="title">
+          <h5>Name</h5>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="input-full-width">
+            <mat-label>Initials</mat-label>
+            <input matInput readonly formControlName="initials" />
+          </mat-form-field>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-form-field class="input-full-width">
+            <mat-label>Surname prefix</mat-label>
+            <input matInput readonly formControlName="surnamePrefix" />
+          </mat-form-field>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-form-field class="input-full-width">
+            <mat-label>Surname</mat-label>
+            <input matInput readonly formControlName="surname" />
+          </mat-form-field>
+        </mat-grid-tile>
+
+        <mat-grid-tile colspan="3" class="title">
+          <h5>Address</h5>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="input-full-width">
+            <mat-label>Postal code</mat-label>
+            <input matInput readonly formControlName="postalCode" />
+          </mat-form-field>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-form-field class="input-full-width">
+            <mat-label>Street</mat-label>
+            <input matInput readonly formControlName="streetName" />
+          </mat-form-field>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-form-field class="input-full-width">
+            <mat-label>House number</mat-label>
+            <input matInput readonly formControlName="houseNumber" />
+          </mat-form-field>
+          @if (customer.houseNumberExtension) {
+          <mat-form-field class="input-full-width">
+            <mat-label>Ext.</mat-label>
+            <input matInput readonly formControlName="houseNumberExtension" />
+          </mat-form-field>
+          }
+        </mat-grid-tile>
+
+        <mat-grid-tile colspan="3" class="title">
+          <h5>Personal details</h5>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-form-field class="input-full-width">
+            <mat-label>Birth date</mat-label>
+            <input matInput readonly formControlName="birthDate" />
+          </mat-form-field>
+        </mat-grid-tile>
+
+        <mat-grid-tile>
+          <mat-form-field class="input-full-width">
+            <mat-label>Sex</mat-label>
+            <mat-select formControlName="sex">
+              <mat-option disabled value="male">Male</mat-option>
+              <mat-option disabled value="female">Female</mat-option>
+              <mat-option disabled value="other">Other</mat-option>
+              <mat-option disabled value="preferNotToSay"
+                >Prefer not to say</mat-option
+              >
+            </mat-select>
+          </mat-form-field>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </form>
+  </mat-card-content>
+</mat-card>
+}

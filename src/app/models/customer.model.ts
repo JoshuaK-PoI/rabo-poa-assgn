@@ -12,8 +12,8 @@ export interface Customer {
 }
 
 export enum Sex {
-  Male,
-  Female,
-  Other,
-  PreferNotToSay,
+  Male = 'male',
+  Female = 'female',
+  Other = 'other',
+  PreferNotToSay = 'prefer-not-to-say',
 }
