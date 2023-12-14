@@ -1,7 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Customer, Sex } from './models/customer.model';
-import customersJson from '../assets/customers.json';
-import { Observable, of } from 'rxjs';
+import { Inject, Injectable } from '@angular/core';
+import { Customer } from './models/customer.model';
+import { Observable, map } from 'rxjs';
+import {
+  CUSTOMER_DATA_SOURCE_TOKEN,
+  CustomerDataSource,
+} from '../datasource/customer-data-source';
 
 export type CustomerResponse = {
   customers: Customer[];
@@ -12,59 +15,57 @@ export type CustomerResponse = {
   providedIn: 'root',
 })
 export class CustomerService {
+  constructor(
+    /**
+     * By using an injection token rather than a concrete class,
+     * we can choose the data source at runtime.
+     * This is beneficial for testing, as we can provide a mock data source
+     * during testing.
+     */
+    @Inject(CUSTOMER_DATA_SOURCE_TOKEN) private dataSource: CustomerDataSource
+  ) {}
   getCustomer(customerId: string): Observable<Customer | null> {
-    if (!customerId) {
-      return of(null);
-    }
-
-    const customer = this.getCustomersFromDatabase().find(
-      (customer) => customer.id === customerId
-    );
-
-    return of(customer ?? null);
+    return this.dataSource.getById(customerId);
   }
-
-  searchCustomers(searchTerm: string | null): Observable<CustomerResponse> {
-    const customers = this.getCustomersFromDatabase().filter(
-      (customer) =>
-        customer.surname
-          .toLowerCase()
-          .includes(searchTerm?.toLowerCase() ?? '') ||
-        customer.initials
-          ?.toLowerCase()
-          .includes(searchTerm?.toLowerCase() ?? '') ||
-        customer.postalCode
-          .toLowerCase()
-          .includes(searchTerm?.toLowerCase() ?? '')
-    );
-
-    return of({
-      customers,
-      total: customers.length,
-    });
-  }
-  constructor() {}
 
   /**
-   * Get all customers from the database
+   * Note: This functionality should be implemented in the backend.
    *
-   * @note Implemented as an observable to simulate an asynchronous call to a database.
+   * As this assignment is frontend only, this is implemented here.
    */
-  public getCustomers(): Observable<CustomerResponse> {
-    return of({
-      customers: this.getCustomersFromDatabase(),
-      total: customersJson.length,
-    });
+  searchCustomers(searchTerm: string | null): Observable<CustomerResponse> {
+    return this.dataSource
+      .get()
+      .pipe(
+        map((customers) =>
+          customers.filter(
+            (customer) =>
+              customer.surname
+                .toLowerCase()
+                .includes(searchTerm?.toLowerCase() ?? '') ||
+              customer.initials
+                ?.toLowerCase()
+                .includes(searchTerm?.toLowerCase() ?? '') ||
+              customer.postalCode
+                .toLowerCase()
+                .includes(searchTerm?.toLowerCase() ?? '')
+          )
+        )
+      )
+      .pipe(
+        map((customers) => ({
+          customers,
+          total: customers.length,
+        }))
+      );
   }
 
-  private getCustomersFromDatabase(): Customer[] {
-    return customersJson.map((customer) => ({
-      ...customer,
-      sex: Sex[
-        (Object.entries(Sex).find(
-          ([_key, value]) => value === customer.sex
-        )?.[0] ?? 'Other') as keyof typeof Sex
-      ],
-    }));
+  public getCustomers(): Observable<CustomerResponse> {
+    return this.dataSource.get().pipe(
+      map((customers) => ({
+        customers,
+        total: customers.length,
+      }))
+    );
   }
 }
