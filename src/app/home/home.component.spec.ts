@@ -48,10 +48,7 @@ describe('HomeComponent', () => {
    */
   const setupCustomerServiceMock = () => {
     customerServiceMock.getCustomers.and.returnValue(
-      of({
-        customers: customerServiceMockResponse,
-        total: customerServiceMockResponse.length,
-      })
+      of(customerServiceMockResponse)
     );
 
     customerServiceMock.searchCustomers.and.callFake((searchTerm: string) => {
@@ -61,10 +58,7 @@ describe('HomeComponent', () => {
           -1
       );
 
-      return of({
-        customers: filteredCustomers,
-        total: filteredCustomers.length,
-      });
+      return of(filteredCustomers);
     });
   };
 
@@ -107,8 +101,9 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
 
     // Check if the data is correct
-    expect(component.customers.data.length).toBe(3);
-    expect(component.total).toBe(3);
+    // Calling property with ['customers'] instead of .customers
+    // to circumvent the private accessor on the property
+    expect(component['customers'].data.length).toBe(3);
 
     const tableRows = fixture.nativeElement.querySelectorAll('tr');
     expect(tableRows.length).toBe(4); // 3 + header row
@@ -182,6 +177,7 @@ describe('HomeComponent', () => {
 
   it('shows all customers again after clearing the search', fakeAsync(() => {
     setupCustomerServiceMock();
+
     fixture.detectChanges();
 
     const searchInput = fixture.nativeElement.querySelector('input');
@@ -195,12 +191,10 @@ describe('HomeComponent', () => {
     const tableRows = fixture.nativeElement.querySelectorAll('tr');
     expect(tableRows.length).toBe(2); // 1 + header row
 
-    searchInput.value = '';
+    searchInput.value = null;
     searchInput.dispatchEvent(new Event('input'));
-
     fixture.detectChanges();
     tick(500);
-
     const tableRowsAfterClear = fixture.nativeElement.querySelectorAll('tr');
     expect(tableRowsAfterClear.length).toBe(4); // 3 + header row
   }));
@@ -259,15 +253,19 @@ describe('HomeComponent', () => {
   }));
 
   it('handles errors from the customer service', fakeAsync(() => {
+    // Spy the alert() function to prevent it from showing
+    spyOn(window, 'alert');
+
     // Setup the mock to return an error
     customerServiceMock.getCustomers.and.returnValue(
       throwError(() => new Error('Something went wrong'))
     );
 
     fixture.detectChanges();
-    expect(component.customers.data.length).toBe(0);
+    expect(component['customers'].data.length).toBe(0);
 
-    // Advance any remaining timers
-    tick();
+    expect(window.alert).toHaveBeenCalledWith(
+      'An error occurred while retrieving the customers.'
+    );
   }));
 });

@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -38,20 +44,11 @@ import { DevCustomerDataSource } from '../../datasource/dev-customer-data-source
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent implements OnInit {
-  constructor(
-    private customerService: CustomerService,
-    private router: Router
-  ) {}
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild(MatPaginator) private paginator!: MatPaginator;
+  @ViewChild(MatSort) private sort!: MatSort;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-
-  public customers: MatTableDataSource<Customer> =
-    new MatTableDataSource<Customer>();
-
-  public total: number = 0;
-  protected subscriptions: Subscription[] = [];
+  protected customers = new MatTableDataSource<Customer>();
 
   protected displayedColumns: string[] = [
     'initials',
@@ -61,43 +58,67 @@ export class HomeComponent implements OnInit {
     'houseNumber',
     'houseNumberExtension',
   ];
+
   protected searchForm = new FormGroup({
     searchTerm: new FormControl(''),
   });
 
+  private subscriptions: Subscription[] = [];
+
+  constructor(
+    private customerService: CustomerService,
+    private router: Router
+  ) {}
+
   ngOnInit() {
+    this.getAll();
+    this.initSearch();
+  }
+
+  ngAfterViewInit() {
+    // Bind pagination and sorting to the data source.
+    // Thanks to the use of Material, this is all that is needed.
+    this.customers.paginator = this.paginator;
+    this.customers.sort = this.sort;
+  }
+
+  ngOnDestroy() {
+    // Unsubscribe from all subscriptions to prevent memory leaks.
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  navigate(customerId: string) {
+    // Router links cannot be bound to a table row, so we have to use a function.
+    this.router.navigate(['customer', customerId]);
+  }
+
+  private getCustomerError(error: any): void {
+    // Using an alert and console error to keep things simple.
+    // In a real-world application,
+    // the alert would be replaced with a snackbar or toast.
+    // The console error may be sent to a logging service e.g. Sentry or Bugsnag.
+    console.error(error);
+    alert('An error occurred while retrieving the customers.');
+    this.customers.data = [];
+  }
+
+  private getAll(): void {
     this.customerService
       .getCustomers()
       .pipe(take(1))
       .subscribe({
-        next: ({ customers, total }) => {
-          this.customers.data = customers;
-          this.total = total;
-        },
-        error: (error) => {
-          console.error(error);
-          this.customers.data = [];
-          this.total = 0;
-        },
+        next: (customers) => this.updateCustomers(customers),
+        error: (error) => this.getCustomerError(error),
       });
+  }
 
+  private initSearch() {
     this.subscriptions.push(
       this.searchForm.valueChanges
         .pipe(debounceTime(500))
         .subscribe(({ searchTerm }) => {
           if (!searchTerm) {
-            this.customerService.getCustomers().subscribe({
-              next: ({ customers, total }) => {
-                this.customers.data = customers;
-                this.total = total;
-              },
-
-              error: (error) => {
-                console.error(error);
-                this.customers.data = [];
-                this.total = 0;
-              },
-            });
+            this.getAll();
             return;
           }
 
@@ -105,31 +126,17 @@ export class HomeComponent implements OnInit {
             .searchCustomers(searchTerm)
             .pipe(take(1))
             .subscribe({
-              next: ({ customers, total }) => {
-                this.customers.data = customers;
-                this.total = total;
-              },
-
-              error: (error) => {
-                console.error(error);
-                this.customers.data = [];
-                this.total = 0;
-              },
+              next: (customers) => this.updateCustomers(customers),
+              error: (error) => this.getCustomerError(error),
             });
         })
     );
   }
 
-  ngAfterViewInit() {
-    this.customers.paginator = this.paginator;
-    this.customers.sort = this.sort;
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
-  }
-
-  navigate(customerId: string) {
-    this.router.navigate(['customer', customerId]);
+  private updateCustomers(customers: Customer[]): void {
+    // This is a separate function to avoid having to change
+    // every subscription to the customer service in case
+    // more updates in the component are needed.
+    this.customers.data = customers;
   }
 }

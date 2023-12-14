@@ -28,16 +28,16 @@ describe('CustomerService', () => {
   });
 
   it('should return all customers', waitForAsync(() => {
-    service.getCustomers().subscribe((response) => {
-      expect(response.customers).toEqual(customerServiceMockResponse);
+    service.getCustomers().subscribe((customers) => {
+      expect(customers).toEqual(customerServiceMockResponse);
     });
   }));
 
   it('should return a single customer by id', waitForAsync(() => {
     service
       .getCustomer(customerServiceMockResponse[0].id)
-      .subscribe((response) => {
-        expect(response).toEqual(customerServiceMockResponse[0]);
+      .subscribe((customer) => {
+        expect(customer).toEqual(customerServiceMockResponse[0]);
       });
   }));
 
@@ -45,15 +45,15 @@ describe('CustomerService', () => {
     // Take a substring of the first customer's surname
     const searchTerm = customerServiceMockResponse[0].surname.substring(0, 3);
 
-    service.searchCustomers(searchTerm).subscribe((response) => {
-      expect(response.customers).toContain(customerServiceMockResponse[0]);
-      expect(response.customers).not.toContain(customerServiceMockResponse[1]);
+    service.searchCustomers(searchTerm).subscribe((customers) => {
+      expect(customers).toContain(customerServiceMockResponse[0]);
+      expect(customers).not.toContain(customerServiceMockResponse[1]);
     });
   }));
 
   it('handles gracefully when an empty search term is provided', waitForAsync(() => {
-    service.searchCustomers(null).subscribe((response) => {
-      expect(response.customers).toEqual(customerServiceMockResponse);
+    service.searchCustomers(null).subscribe((customers) => {
+      expect(customers).toEqual(customerServiceMockResponse);
     });
   }));
 });

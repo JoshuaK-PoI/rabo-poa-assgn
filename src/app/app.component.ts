@@ -24,5 +24,5 @@ import { CustomerService } from './customer.service';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  title = 'rabo-poa-assgn';
+  protected title = 'rabo-poa-assgn';
 }

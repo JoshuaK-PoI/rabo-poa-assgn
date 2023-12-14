@@ -6,11 +6,6 @@ import {
   CustomerDataSource,
 } from '../datasource/customer-data-source';
 
-export type CustomerResponse = {
-  customers: Customer[];
-  total: number;
-};
-
 @Injectable({
   providedIn: 'root',
 })
@@ -33,7 +28,7 @@ export class CustomerService {
    *
    * As this assignment is frontend only, this is implemented here.
    */
-  searchCustomers(searchTerm: string | null): Observable<CustomerResponse> {
+  searchCustomers(searchTerm: string | null): Observable<Customer[]> {
     return this.dataSource
       .get()
       .pipe(
@@ -51,21 +46,10 @@ export class CustomerService {
                 .includes(searchTerm?.toLowerCase() ?? '')
           )
         )
-      )
-      .pipe(
-        map((customers) => ({
-          customers,
-          total: customers.length,
-        }))
       );
   }
 
-  public getCustomers(): Observable<CustomerResponse> {
-    return this.dataSource.get().pipe(
-      map((customers) => ({
-        customers,
-        total: customers.length,
-      }))
-    );
+  public getCustomers(): Observable<Customer[]> {
+    return this.dataSource.get();
   }
 }

@@ -38,9 +38,8 @@ import { RouterLink } from '@angular/router';
 })
 export class CustomerDetailComponent {
   @Input() private customerId: string = '';
+
   protected customer: Customer | null = null;
-  constructor(private customerService: CustomerService) {}
-  protected readonly Sex = Sex;
 
   protected customerForm = new FormGroup({
     initials: new FormControl(''),
@@ -54,9 +53,15 @@ export class CustomerDetailComponent {
     houseNumberExtension: new FormControl(''),
   });
 
+  constructor(private customerService: CustomerService) {}
+
   ngOnInit() {
     this.customerService.getCustomer(this.customerId).subscribe((customer) => {
       this.customer = customer;
+
+      // This coincides with the @if check in the template.
+      // To prevent unintended behavior, we should not set the form values
+      // if the customer is null.
       if (customer) {
         this.customerForm.patchValue(customer);
       }
