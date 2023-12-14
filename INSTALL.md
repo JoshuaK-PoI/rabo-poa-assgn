@@ -20,7 +20,7 @@ npm install -g @angular/cli
 Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com:__TODO__/__TODO__.git
+git clone https://github.com/JoshuaK-PoI/rabo-poa-assgn.git
 ```
 
 To install the application dependencies, run the following command in the root directory
