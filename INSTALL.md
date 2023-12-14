@@ -15,6 +15,21 @@ use the following command to install the Angular CLI globally:
 npm install -g @angular/cli
 ```
 
+## Application install
+
+Clone the repository to your local machine:
+
+```bash
+git clone https://github.com:__TODO__/__TODO__.git
+```
+
+To install the application dependencies, run the following command in the root directory
+of the project:
+
+```bash
+npm install
+```
+
 # Usage
 
 ## Starting the application
