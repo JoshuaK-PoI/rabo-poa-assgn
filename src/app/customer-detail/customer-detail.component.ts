@@ -53,6 +53,7 @@ export class CustomerDetailComponent {
     houseNumber: new FormControl(''),
     houseNumberExtension: new FormControl(''),
   });
+
   ngOnInit() {
     this.customerService.getCustomer(this.customerId).subscribe((customer) => {
       this.customer = customer;

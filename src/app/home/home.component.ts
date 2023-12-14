@@ -13,9 +13,11 @@ import {
 } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { debounceTime } from 'rxjs';
+import { Subscription, debounceTime, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
+import { CUSTOMER_DATA_SOURCE_TOKEN } from '../../datasource/customer-data-source';
+import { DevCustomerDataSource } from '../../datasource/dev-customer-data-source';
 
 @Component({
   selector: 'app-home',
@@ -45,10 +47,11 @@ export class HomeComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  protected customers: MatTableDataSource<Customer> =
+  public customers: MatTableDataSource<Customer> =
     new MatTableDataSource<Customer>();
 
-  protected total: number = 0;
+  public total: number = 0;
+  protected subscriptions: Subscription[] = [];
 
   protected displayedColumns: string[] = [
     'initials',
@@ -63,36 +66,67 @@ export class HomeComponent implements OnInit {
   });
 
   ngOnInit() {
-    this.customerService.getCustomers().subscribe(({ customers, total }) => {
-      this.customers.data = customers;
-      this.total = total;
-    });
-
-    this.searchForm.valueChanges
-      .pipe(debounceTime(500))
-      .subscribe(({ searchTerm }) => {
-        if (!searchTerm) {
-          this.customerService
-            .getCustomers()
-            .subscribe(({ customers, total }) => {
-              this.customers.data = customers;
-              this.total = total;
-            });
-          return;
-        }
-
-        this.customerService
-          .searchCustomers(searchTerm)
-          .subscribe(({ customers, total }) => {
-            this.customers.data = customers;
-            this.total = total;
-          });
+    this.customerService
+      .getCustomers()
+      .pipe(take(1))
+      .subscribe({
+        next: ({ customers, total }) => {
+          this.customers.data = customers;
+          this.total = total;
+        },
+        error: (error) => {
+          console.error(error);
+          this.customers.data = [];
+          this.total = 0;
+        },
       });
+
+    this.subscriptions.push(
+      this.searchForm.valueChanges
+        .pipe(debounceTime(500))
+        .subscribe(({ searchTerm }) => {
+          if (!searchTerm) {
+            this.customerService.getCustomers().subscribe({
+              next: ({ customers, total }) => {
+                this.customers.data = customers;
+                this.total = total;
+              },
+
+              error: (error) => {
+                console.error(error);
+                this.customers.data = [];
+                this.total = 0;
+              },
+            });
+            return;
+          }
+
+          this.customerService
+            .searchCustomers(searchTerm)
+            .pipe(take(1))
+            .subscribe({
+              next: ({ customers, total }) => {
+                this.customers.data = customers;
+                this.total = total;
+              },
+
+              error: (error) => {
+                console.error(error);
+                this.customers.data = [];
+                this.total = 0;
+              },
+            });
+        })
+    );
   }
 
   ngAfterViewInit() {
     this.customers.paginator = this.paginator;
     this.customers.sort = this.sort;
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   navigate(customerId: string) {
