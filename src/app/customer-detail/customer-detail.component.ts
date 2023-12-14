@@ -1,14 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CustomerService } from '../customer.service';
-import { Customer, Sex } from '../models/customer.model';
 import { CommonModule } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
 import {
   FormControl,
   FormGroup,
@@ -17,6 +8,16 @@ import {
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+
+import { CustomerService } from '../customer.service';
+import { Customer } from '../models/customer.model';
 @Component({
   selector: 'app-customer-detail',
   standalone: true,

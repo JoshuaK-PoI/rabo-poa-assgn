@@ -5,23 +5,26 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { MatInputModule } from '@angular/material/input';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { CustomerService } from '../customer.service';
-import { Customer } from '../models/customer.model';
 import {
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Subscription, debounceTime, take } from 'rxjs';
-import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
+
+import { Subscription, debounceTime, take } from 'rxjs';
+
+import { CustomerService } from '../customer.service';
+import { Customer } from '../models/customer.model';
 
 @Component({
   selector: 'app-home',
