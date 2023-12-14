@@ -56,3 +56,29 @@ The project is already supplied with a `customers.json` file in `src/assets`. If
 ```bash
 npm run seed
 ```
+
+# Testing the application
+
+To run the unit tests, run the following command in the root directory of the project:
+
+```bash
+npm run test -- -- --no-watch
+```
+
+or
+
+```bash
+ng test --no-watch
+```
+
+To show coverage reports, run the following command in the root directory of the project:
+
+```bash
+npm run test -- -- --no-watch --code-coverage
+```
+
+or
+
+```bash
+ng test --no-watch --code-coverage
+```
