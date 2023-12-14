@@ -4,9 +4,11 @@ import { CustomerDetailComponent } from './customer-detail.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HomeComponent } from '../home/home.component';
-import { customerServiceMockResponse } from '../app.component.spec';
+import { customerServiceMockResponse } from '../../datasource/test-customer-data-source';
 import { Customer } from '../models/customer.model';
 import { Router } from '@angular/router';
+import { CustomerService } from '../customer.service';
+import { of } from 'rxjs';
 
 describe('CustomerDetailComponent', () => {
   let component: CustomerDetailComponent;
@@ -14,6 +16,10 @@ describe('CustomerDetailComponent', () => {
   let customer = customerServiceMockResponse[0];
   let customerServiceMock: any;
   let router: Router;
+
+  const setupCustomerServiceMock = () => {
+    customerServiceMock.getCustomer.and.returnValue(of(customer));
+  };
 
   beforeEach(async () => {
     customerServiceMock = jasmine.createSpyObj('CustomerService', [
@@ -28,6 +34,12 @@ describe('CustomerDetailComponent', () => {
           { path: 'home', component: HomeComponent },
         ]),
       ],
+      providers: [
+        {
+          provide: CustomerService,
+          useValue: customerServiceMock,
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CustomerDetailComponent);
@@ -36,25 +48,28 @@ describe('CustomerDetailComponent', () => {
   });
 
   it('should create', () => {
+    setupCustomerServiceMock();
     fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should receive customer details when provided with an ID', () => {
+    setupCustomerServiceMock();
+
     // Provide customer ID input to component
     component['customerId'] = customer.id;
 
-    customerServiceMock.getCustomer.and.returnValue(customer);
     fixture.detectChanges();
 
     expect(component['customer']).toEqual(customer);
   });
 
   it('should show customer details in the form', () => {
+    setupCustomerServiceMock();
+
     // Provide customer ID input to component
     component['customerId'] = customer.id;
 
-    customerServiceMock.getCustomer.and.returnValue(customer);
     fixture.detectChanges();
     // Omit the ID, this is not part of the form
     const customerWithoutId: Partial<Customer> = { ...customer };
@@ -64,10 +79,11 @@ describe('CustomerDetailComponent', () => {
   });
 
   it('should show a message when no customer is found', () => {
+    customerServiceMock.getCustomer.and.returnValue(of(null));
+
     // Provide customer ID input to component
     component['customerId'] = 'invalid-id';
 
-    customerServiceMock.getCustomer.and.returnValue(null);
     fixture.detectChanges();
 
     const message = fixture.nativeElement.querySelector('p');
@@ -75,6 +91,8 @@ describe('CustomerDetailComponent', () => {
   });
 
   it('routes to the home page when the back button is clicked', () => {
+    setupCustomerServiceMock();
+
     const button = fixture.nativeElement.querySelector('a');
     button.click();
 

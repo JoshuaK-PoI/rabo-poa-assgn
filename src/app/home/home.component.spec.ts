@@ -11,7 +11,7 @@ import { CustomerService } from '../customer.service';
 import { of, throwError } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { customerServiceMockResponse } from '../app.component.spec';
+import { customerServiceMockResponse } from '../../datasource/test-customer-data-source';
 
 /**
  * Mapping from table columns to index
