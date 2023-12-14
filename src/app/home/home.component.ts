@@ -22,8 +22,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { Subscription, debounceTime, take } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
-import { CUSTOMER_DATA_SOURCE_TOKEN } from '../../datasource/customer-data-source';
-import { DevCustomerDataSource } from '../../datasource/dev-customer-data-source';
 
 @Component({
   selector: 'app-home',
